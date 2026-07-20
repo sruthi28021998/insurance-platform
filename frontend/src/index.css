@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-[#f7f8fb] text-ink font-sans;
+}
+
+.stamp {
+  @apply inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide;
+}
+.stamp-active   { @apply border-emerald-600/30 bg-emerald-50 text-emerald-700; }
+.stamp-expired  { @apply border-slate-400/30 bg-slate-100 text-slate-600; }
+.stamp-cancelled{ @apply border-rose-600/30 bg-rose-50 text-rose-700; }
+.stamp-pending  { @apply border-amber-500/30 bg-amber-50 text-amber-700; }
+.stamp-approved { @apply border-emerald-600/30 bg-emerald-50 text-emerald-700; }
+.stamp-rejected { @apply border-rose-600/30 bg-rose-50 text-rose-700; }
+.stamp-paid     { @apply border-emerald-600/30 bg-emerald-50 text-emerald-700; }
+.stamp-overdue  { @apply border-rose-600/30 bg-rose-50 text-rose-700; }
+
+.card {
+  @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+}
+.btn-primary {
+  @apply rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50;
+}
+.btn-secondary {
+  @apply rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-slate-50;
+}
+.input {
+  @apply w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100;
+}
+.label {
+  @apply mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500;
+}
