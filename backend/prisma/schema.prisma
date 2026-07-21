@@ -31,6 +31,13 @@ enum PaymentStatus {
   OVERDUE
 }
 
+enum DocumentType {
+  IDENTITY
+  POLICY
+  CLAIM
+  OTHER
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   name      String
@@ -38,8 +45,6 @@ model User {
   password  String
   role      Role     @default(CUSTOMER)
   createdAt DateTime @default(now())
-
-  // If role = CUSTOMER, this links to their customer profile
   customer  Customer?
 }
 
@@ -92,18 +97,20 @@ model PremiumPayment {
   id            Int           @id @default(autoincrement())
   policyId      Int
   policy        Policy        @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  dueDate       DateTime      @default(now())
   paymentDate   DateTime      @default(now())
   amount        Float
   paymentStatus PaymentStatus @default(PENDING)
 }
 
 model Document {
-  id         Int      @id @default(autoincrement())
-  customerId Int?
-  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  claimId    Int?
-  claim      Claim?    @relation(fields: [claimId], references: [id], onDelete: Cascade)
-  fileName   String
-  filePath   String
-  uploadedAt DateTime  @default(now())
+  id           Int          @id @default(autoincrement())
+  customerId   Int?
+  customer     Customer?    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  claimId      Int?
+  claim        Claim?       @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  documentType DocumentType @default(OTHER)
+  fileName     String
+  filePath     String
+  uploadedAt   DateTime     @default(now())
 }

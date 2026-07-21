@@ -12,6 +12,7 @@ import Claims from './pages/Claims';
 import Premiums from './pages/Premiums';
 import Documents from './pages/Documents';
 import Reports from './pages/Reports';
+import Employees from './pages/Employees';
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
         <Route path="/premiums" element={<Premiums />} />
         <Route path="/documents" element={<Documents />} />
         <Route path="/reports" element={<ProtectedRoute roles={['ADMIN']}><Reports /></ProtectedRoute>} />
+        <Route path="/employees" element={<ProtectedRoute roles={['ADMIN']}><Employees /></ProtectedRoute>} />
       </Route>
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

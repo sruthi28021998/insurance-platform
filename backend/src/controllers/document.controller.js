@@ -2,15 +2,17 @@ const path = require('path');
 const fs = require('fs');
 const prisma = require('../config/db');
 
+// POST /api/documents/upload  (multipart/form-data, field name: "file")
 exports.uploadDocument = async (req, res, next) => {
   try {
     if (!req.file) return res.status(400).json({ message: 'No file uploaded' });
-    const { customerId, claimId } = req.body;
+    const { customerId, claimId, documentType } = req.body;
 
     const document = await prisma.document.create({
       data: {
         fileName: req.file.originalname,
         filePath: req.file.filename,
+        documentType: documentType || 'OTHER',
         customerId: customerId ? Number(customerId) : null,
         claimId: claimId ? Number(claimId) : null,
       },
@@ -21,6 +23,7 @@ exports.uploadDocument = async (req, res, next) => {
   }
 };
 
+// GET /api/documents?customerId=&claimId=
 exports.getDocuments = async (req, res, next) => {
   try {
     const { customerId, claimId } = req.query;
@@ -41,10 +44,8 @@ exports.downloadDocument = async (req, res, next) => {
   try {
     const doc = await prisma.document.findUnique({ where: { id: Number(req.params.id) } });
     if (!doc) return res.status(404).json({ message: 'Document not found' });
-
     const filePath = path.join(__dirname, '..', 'uploads', doc.filePath);
     if (!fs.existsSync(filePath)) return res.status(404).json({ message: 'File missing on server' });
-
     res.download(filePath, doc.fileName);
   } catch (err) {
     next(err);
@@ -55,10 +56,8 @@ exports.deleteDocument = async (req, res, next) => {
   try {
     const doc = await prisma.document.findUnique({ where: { id: Number(req.params.id) } });
     if (!doc) return res.status(404).json({ message: 'Document not found' });
-
     const filePath = path.join(__dirname, '..', 'uploads', doc.filePath);
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-
     await prisma.document.delete({ where: { id: doc.id } });
     res.json({ message: 'Document deleted' });
   } catch (err) {

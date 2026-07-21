@@ -6,36 +6,36 @@ async function main() {
   const password = await bcrypt.hash('Password123!', 10);
 
   const admin = await prisma.user.upsert({
-    where: { email: '[email protected]' },
-    update: {},
-    create: { name: 'Admin User', email: '[email protected]', password, role: 'ADMIN' },
-  });
+  where: { email: 'admin1@test.com' },
+  update: {},
+  create: { name: 'Admin User', email: 'admin1@test.com', password, role: 'ADMIN' },
+});
 
-  const agent = await prisma.user.upsert({
-    where: { email: '[email protected]' },
-    update: {},
-    create: { name: 'Agent User', email: '[email protected]', password, role: 'AGENT' },
-  });
+const agent = await prisma.user.upsert({
+  where: { email: 'agent1@test.com' },
+  update: {},
+  create: { name: 'Agent User', email: 'agent1@test.com', password, role: 'AGENT' },
+});
 
-  const customerUser = await prisma.user.upsert({
-    where: { email: '[email protected]' },
-    update: {},
-    create: {
-      name: 'Demo Customer',
-      email: '[email protected]',
-      password,
-      role: 'CUSTOMER',
-      customer: {
-        create: {
-          name: 'Demo Customer',
-          email: '[email protected]',
-          phone: '9876543210',
-          address: '123 Main Street',
-        },
+const customerUser = await prisma.user.upsert({
+  where: { email: 'customer1@test.com' },
+  update: {},
+  create: {
+    name: 'Demo Customer',
+    email: 'customer1@test.com',
+    password,
+    role: 'CUSTOMER',
+    customer: {
+      create: {
+        name: 'Demo Customer',
+        email: 'customer1@test.com',
+        phone: '9876543210',
+        address: '123 Main Street',
       },
     },
-    include: { customer: true },
-  });
+  },
+  include: { customer: true },
+});
 
   console.log('Seeded users (all passwords: Password123!):');
   console.log({ admin: admin.email, agent: agent.email, customer: customerUser.email });

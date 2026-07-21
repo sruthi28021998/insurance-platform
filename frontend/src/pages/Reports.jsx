@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react';
-import { Bar, Doughnut } from 'react-chartjs-2';
+import { Bar, Doughnut, Line } from 'react-chartjs-2';
 import Chart from 'chart.js/auto';
 import api from '../api/axios';
 
 export default function Reports() {
   const [dashboard, setDashboard] = useState(null);
   const [monthly, setMonthly] = useState([]);
+  const [claimStats, setClaimStats] = useState([]);
+  const [growth, setGrowth] = useState([]);
 
   useEffect(() => {
     api.get('/reports/dashboard').then((res) => setDashboard(res.data));
     api.get('/reports/monthly').then((res) => setMonthly(res.data));
+    api.get('/claims/stats').then((res) => setClaimStats(res.data));
+    api.get('/reports/customer-growth').then((res) => setGrowth(res.data));
   }, []);
 
   if (!dashboard) return <p className="text-slate-500">Loading…</p>;
@@ -30,6 +34,26 @@ export default function Reports() {
     ],
   };
 
+  const claimStatsData = {
+    labels: claimStats.map((c) => c.status),
+    datasets: [{
+      label: 'Number of claims',
+      data: claimStats.map((c) => c._count.status),
+      backgroundColor: ['#f59e0b', '#10b981', '#e11d48'],
+    }],
+  };
+
+  const growthData = {
+    labels: growth.map((g) => g.month),
+    datasets: [{
+      label: 'New customers',
+      data: growth.map((g) => g.count),
+      borderColor: '#3868e0',
+      backgroundColor: '#3868e0',
+      tension: 0.3,
+    }],
+  };
+
   return (
     <div>
       <h1 className="mb-6 font-display text-2xl font-semibold text-ink">Reports</h1>
@@ -41,6 +65,14 @@ export default function Reports() {
         <div className="card p-5">
           <p className="mb-4 text-sm font-semibold text-slate-500">Monthly business report</p>
           <Bar data={monthlyData} />
+        </div>
+        <div className="card p-5">
+          <p className="mb-4 text-sm font-semibold text-slate-500">Claim statistics</p>
+          <Bar data={claimStatsData} />
+        </div>
+        <div className="card p-5">
+          <p className="mb-4 text-sm font-semibold text-slate-500">Customer growth</p>
+          <Line data={growthData} />
         </div>
       </div>
     </div>
