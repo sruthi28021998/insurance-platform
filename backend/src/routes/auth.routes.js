@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
-const { register, login, me, createEmployee } = require('../controllers/auth.controller');
+const { register, login, me, createEmployee, getEmployees } = require('../controllers/auth.controller');
 const authenticate = require('../middleware/auth');
 const authorize = require('../middleware/roleCheck');
 const validate = require('../middleware/validate');
@@ -18,6 +18,7 @@ router.post('/login', [
 ], validate, login);
 
 router.get('/me', authenticate, me);
+router.get('/employees', authenticate, authorize('ADMIN'), getEmployees);
 
 router.post('/employees', authenticate, authorize('ADMIN'), [
   body('name').trim().notEmpty().withMessage('Name is required'),

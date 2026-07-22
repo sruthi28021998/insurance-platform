@@ -11,7 +11,7 @@ const premiumRoutes = require('./routes/premium.routes');
 const documentRoutes = require('./routes/document.routes');
 const reportRoutes = require('./routes/report.routes');
 const errorHandler = require('./middleware/errorHandler');
-
+const settingsRoutes = require('./routes/settings.routes');
 const app = express();
 
 app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }));
@@ -29,7 +29,7 @@ app.use('/api/claims', claimRoutes);
 app.use('/api/premiums', premiumRoutes);
 app.use('/api/documents', documentRoutes);
 app.use('/api/reports', reportRoutes);
-
+app.use('/api/settings', settingsRoutes);
 app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
 app.use(errorHandler);
 

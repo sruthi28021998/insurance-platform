@@ -9,6 +9,7 @@ import DocumentUploader from '../components/DocumentUploader';
 
 export default function Claims() {
   const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
   const canReview = user?.role === 'ADMIN' || user?.role === 'AGENT';
   const [claims, setClaims] = useState([]);
   const [statusFilter, setStatusFilter] = useState('');
@@ -16,11 +17,12 @@ export default function Claims() {
   const [total, setTotal] = useState(0);
   const limit = 10;
 
+  const [agents, setAgents] = useState([]);
+
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState({ policyId: '', claimAmount: '', reason: '' });
   const [error, setError] = useState('');
 
-  // Per-claim documents modal
   const [viewingClaim, setViewingClaim] = useState(null);
   const [claimDocs, setClaimDocs] = useState([]);
 
@@ -32,6 +34,10 @@ export default function Claims() {
     setTotal(data.total);
   }
   useEffect(() => { load(); }, [page, statusFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (isAdmin) api.get('/auth/employees').then((res) => setAgents(res.data.filter((e) => e.role === 'AGENT')));
+  }, [isAdmin]);
 
   async function handleSubmitClaim(e) {
     e.preventDefault();
@@ -51,6 +57,12 @@ export default function Claims() {
     load();
   }
 
+  async function handleAssign(claimId, agentId) {
+    if (!agentId) return;
+    await api.patch(`/claims/${claimId}/assign`, { agentId });
+    load();
+  }
+
   async function openDocs(claim) {
     setViewingClaim(claim);
     const { data } = await api.get('/documents', { params: { claimId: claim.id } });
@@ -61,6 +73,11 @@ export default function Claims() {
     if (!viewingClaim) return;
     const { data } = await api.get('/documents', { params: { claimId: viewingClaim.id } });
     setClaimDocs(data);
+  }
+
+  function agentName(id) {
+    const a = agents.find((ag) => ag.id === id);
+    return a ? a.name : '—';
   }
 
   return (
@@ -86,6 +103,24 @@ export default function Claims() {
           { key: 'reason', label: 'Reason' },
           { key: 'status', label: 'Status', render: (r) => <StatusStamp status={r.status} /> },
           { key: 'docs', label: 'Documents', render: (r) => <button className="text-sm font-semibold text-brand-600" onClick={() => openDocs(r)}>View / Upload</button> },
+          ...(isAdmin
+            ? [{
+                key: 'assign',
+                label: 'Assigned to',
+                render: (r) => (
+                  <select
+                    className="input"
+                    value={r.assignedAgentId || ''}
+                    onChange={(e) => handleAssign(r.id, e.target.value)}
+                  >
+                    <option value="">Unassigned</option>
+                    {agents.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+                  </select>
+                ),
+              }]
+            : canReview
+            ? [{ key: 'assignedTo', label: 'Assigned to', render: (r) => agentName(r.assignedAgentId) }]
+            : []),
           ...(canReview
             ? [{
                 key: 'actions',

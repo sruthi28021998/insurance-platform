@@ -69,11 +69,18 @@ exports.updateCustomer = async (req, res, next) => {
   }
 };
 
+// POST /api/customers  (Admin/Agent registers a customer directly, no login required yet)
 exports.createCustomer = async (req, res, next) => {
   try {
     const { name, email, phone, address, dob } = req.body;
     const customer = await prisma.customer.create({
-      data: { name, email, phone, address, dob: dob ? new Date(dob) : null, userId: req.body.userId },
+      data: {
+        name,
+        email,
+        phone,
+        address,
+        dob: dob ? new Date(dob) : null,
+      },
     });
     res.status(201).json(customer);
   } catch (err) {

@@ -85,6 +85,15 @@ export default function Policies() {
     }
   }
 
+  async function handleDownloadCertificate(policyId, policyNumber) {
+    const res = await api.get(`/policies/${policyId}/certificate`, { responseType: 'blob' });
+    const url = window.URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${policyNumber}-certificate.pdf`;
+    a.click();
+  }
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -120,6 +129,7 @@ export default function Policies() {
           { key: 'premiumAmount', label: 'Premium', render: (r) => `₹${r.premiumAmount.toLocaleString()}` },
           { key: 'endDate', label: 'Expires', render: (r) => new Date(r.endDate).toLocaleDateString() },
           { key: 'status', label: 'Status', render: (r) => <StatusStamp status={r.status} /> },
+          { key: 'certificate', label: '', render: (r) => <button className="text-sm font-semibold text-brand-600" onClick={() => handleDownloadCertificate(r.id, r.policyNumber)}>Certificate</button> },
           ...(canManage
             ? [{
                 key: 'actions',

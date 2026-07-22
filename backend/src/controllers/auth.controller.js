@@ -105,3 +105,17 @@ exports.createEmployee = async (req, res, next) => {
     next(err);
   }
 };
+
+// GET /api/auth/employees  (Admin only - list Admins/Agents for assignment dropdowns)
+exports.getEmployees = async (req, res, next) => {
+  try {
+    const employees = await prisma.user.findMany({
+      where: { role: { in: ['ADMIN', 'AGENT'] } },
+      select: { id: true, name: true, email: true, role: true },
+      orderBy: { name: 'asc' },
+    });
+    res.json(employees);
+  } catch (err) {
+    next(err);
+  }
+};

@@ -50,8 +50,8 @@ model User {
 
 model Customer {
   id        Int       @id @default(autoincrement())
-  userId    Int       @unique
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int?      @unique
+  user      User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
   name      String
   dob       DateTime?
   phone     String?
@@ -62,7 +62,6 @@ model Customer {
   policies   Policy[]
   documents  Document[]
 }
-
 model Policy {
   id            Int          @id @default(autoincrement())
   customerId    Int
@@ -80,15 +79,16 @@ model Policy {
 }
 
 model Claim {
-  id             Int         @id @default(autoincrement())
-  policyId       Int
-  policy         Policy      @relation(fields: [policyId], references: [id], onDelete: Cascade)
-  claimAmount    Float
-  reason         String
-  status         ClaimStatus @default(PENDING)
-  submissionDate DateTime    @default(now())
-  reviewedBy     Int?
-  reviewNotes    String?
+  id              Int         @id @default(autoincrement())
+  policyId        Int
+  policy          Policy      @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  claimAmount     Float
+  reason          String
+  status          ClaimStatus @default(PENDING)
+  submissionDate  DateTime    @default(now())
+  reviewedBy      Int?
+  reviewNotes     String?
+  assignedAgentId Int?
 
   documents      Document[]
 }
@@ -113,4 +113,12 @@ model Document {
   fileName     String
   filePath     String
   uploadedAt   DateTime     @default(now())
+}
+
+// Singleton table - only one row ever exists (id = 1), holds admin-configurable settings
+model Settings {
+  id                     Int      @id @default(1)
+  companyName            String   @default("Insurance Management Platform")
+  claimApprovalThreshold Float    @default(50000)
+  updatedAt              DateTime @updatedAt
 }

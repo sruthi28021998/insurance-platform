@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './layouts/DashboardLayout';
-
+import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -36,6 +36,7 @@ export default function App() {
         <Route path="/documents" element={<Documents />} />
         <Route path="/reports" element={<ProtectedRoute roles={['ADMIN']}><Reports /></ProtectedRoute>} />
         <Route path="/employees" element={<ProtectedRoute roles={['ADMIN']}><Employees /></ProtectedRoute>} />
+        <Route path="/settings" element={<ProtectedRoute roles={['ADMIN']}><Settings /></ProtectedRoute>} />
       </Route>
 
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

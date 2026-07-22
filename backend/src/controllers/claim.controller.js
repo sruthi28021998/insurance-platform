@@ -89,3 +89,17 @@ exports.getClaimStats = async (req, res, next) => {
     next(err);
   }
 };
+
+// PATCH /api/claims/:id/assign  (Admin only)  body: { agentId }
+exports.assignClaim = async (req, res, next) => {
+  try {
+    const { agentId } = req.body;
+    const claim = await prisma.claim.update({
+      where: { id: Number(req.params.id) },
+      data: { assignedAgentId: Number(agentId) },
+    });
+    res.json(claim);
+  } catch (err) {
+    next(err);
+  }
+};

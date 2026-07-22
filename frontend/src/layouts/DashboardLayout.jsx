@@ -10,6 +10,7 @@ const NAV_BY_ROLE = {
     { to: '/premiums', label: 'Premiums' },
     { to: '/reports', label: 'Reports' },
     { to: '/employees', label: 'Employees' },
+    { to: '/settings', label: 'Settings' },
   ],
   AGENT: [
     { to: '/dashboard', label: 'Dashboard' },

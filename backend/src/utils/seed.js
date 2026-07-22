@@ -5,7 +5,7 @@ const prisma = require('../config/db');
 async function main() {
   const password = await bcrypt.hash('Password123!', 10);
 
-  const admin = await prisma.user.upsert({
+ const admin = await prisma.user.upsert({
   where: { email: 'admin1@test.com' },
   update: {},
   create: { name: 'Admin User', email: 'admin1@test.com', password, role: 'ADMIN' },

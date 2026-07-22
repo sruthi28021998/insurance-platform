@@ -22,4 +22,8 @@ router.patch('/:id/review', authorize('ADMIN', 'AGENT'), [
   body('status').isIn(['APPROVED', 'REJECTED']).withMessage('Status must be APPROVED or REJECTED'),
 ], validate, ctrl.reviewClaim);
 
+router.patch('/:id/assign', authorize('ADMIN'), [
+  body('agentId').isInt({ min: 1 }).withMessage('A valid agent ID is required'),
+], validate, ctrl.assignClaim);
+
 module.exports = router;
