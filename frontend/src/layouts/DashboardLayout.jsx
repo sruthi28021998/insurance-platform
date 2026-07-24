@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 
 const NAV_BY_ROLE = {
   ADMIN: [
@@ -10,6 +11,7 @@ const NAV_BY_ROLE = {
     { to: '/premiums', label: 'Premiums' },
     { to: '/reports', label: 'Reports' },
     { to: '/employees', label: 'Employees' },
+    { to: '/audit-logs', label: 'Audit Logs' },
     { to: '/settings', label: 'Settings' },
   ],
   AGENT: [
@@ -29,6 +31,7 @@ const NAV_BY_ROLE = {
 
 export default function DashboardLayout() {
   const { user, logout } = useAuth();
+  const { dark, toggleDark } = useTheme();
   const nav = NAV_BY_ROLE[user?.role] || [];
 
   return (
@@ -55,6 +58,12 @@ export default function DashboardLayout() {
           </nav>
         </div>
         <div className="border-t border-white/10 px-6 py-4">
+          <button
+            onClick={toggleDark}
+            className="mb-3 w-full rounded-md border border-white/20 px-2 py-1 text-xs text-brand-100 hover:bg-white/5"
+          >
+            {dark ? '☀ Light mode' : '🌙 Dark mode'}
+          </button>
           <p className="text-sm font-medium">{user?.name}</p>
           <p className="mb-3 text-xs uppercase tracking-wide text-brand-100">{user?.role}</p>
           <button onClick={logout} className="text-sm text-brand-100 underline-offset-2 hover:underline">
@@ -62,7 +71,7 @@ export default function DashboardLayout() {
           </button>
         </div>
       </aside>
-      <main className="flex-1 overflow-y-auto p-8">
+      <main className="flex-1 overflow-y-auto bg-[#f7f8fb] p-8 dark:bg-slate-900">
         <Outlet />
       </main>
     </div>

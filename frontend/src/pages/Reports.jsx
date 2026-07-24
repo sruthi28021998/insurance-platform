@@ -8,13 +8,23 @@ export default function Reports() {
   const [monthly, setMonthly] = useState([]);
   const [claimStats, setClaimStats] = useState([]);
   const [growth, setGrowth] = useState([]);
+  const [policyType, setPolicyType] = useState('');
 
   useEffect(() => {
     api.get('/reports/dashboard').then((res) => setDashboard(res.data));
-    api.get('/reports/monthly').then((res) => setMonthly(res.data));
+    api.get('/reports/monthly', { params: policyType ? { policyType } : {} }).then((res) => setMonthly(res.data));
     api.get('/claims/stats').then((res) => setClaimStats(res.data));
     api.get('/reports/customer-growth').then((res) => setGrowth(res.data));
-  }, []);
+  }, [policyType]);
+
+  async function downloadFile(url, filename) {
+    const res = await api.get(url, { responseType: 'blob' });
+    const blobUrl = window.URL.createObjectURL(new Blob([res.data]));
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename;
+    a.click();
+  }
 
   if (!dashboard) return <p className="text-slate-500">Loading…</p>;
 
@@ -56,22 +66,34 @@ export default function Reports() {
 
   return (
     <div>
-      <h1 className="mb-6 font-display text-2xl font-semibold text-ink">Reports</h1>
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-2xl font-semibold text-ink dark:text-white">Reports</h1>
+        <div className="flex flex-wrap items-center gap-2">
+          <select className="input w-auto" value={policyType} onChange={(e) => setPolicyType(e.target.value)}>
+            <option value="">All policy types</option>
+            <option value="Health">Health</option>
+            <option value="Auto">Auto</option>
+            <option value="Life">Life</option>
+          </select>
+          <button className="btn-secondary" onClick={() => downloadFile('/reports/export/pdf', 'business-report.pdf')}>Export PDF</button>
+          <button className="btn-secondary" onClick={() => downloadFile('/reports/export/excel', 'business-report.xlsx')}>Export Excel</button>
+        </div>
+      </div>
       <div className="grid gap-6 md:grid-cols-2">
         <div className="card p-5">
-          <p className="mb-4 text-sm font-semibold text-slate-500">Policy status breakdown</p>
+          <p className="mb-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Policy status breakdown</p>
           <Doughnut data={policyStatusData} />
         </div>
         <div className="card p-5">
-          <p className="mb-4 text-sm font-semibold text-slate-500">Monthly business report</p>
+          <p className="mb-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Monthly business report</p>
           <Bar data={monthlyData} />
         </div>
         <div className="card p-5">
-          <p className="mb-4 text-sm font-semibold text-slate-500">Claim statistics</p>
+          <p className="mb-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Claim statistics</p>
           <Bar data={claimStatsData} />
         </div>
         <div className="card p-5">
-          <p className="mb-4 text-sm font-semibold text-slate-500">Customer growth</p>
+          <p className="mb-4 text-sm font-semibold text-slate-500 dark:text-slate-400">Customer growth</p>
           <Line data={growthData} />
         </div>
       </div>

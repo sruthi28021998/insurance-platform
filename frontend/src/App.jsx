@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './layouts/DashboardLayout';
-import Settings from './pages/Settings';
+
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -13,6 +13,8 @@ import Premiums from './pages/Premiums';
 import Documents from './pages/Documents';
 import Reports from './pages/Reports';
 import Employees from './pages/Employees';
+import Settings from './pages/Settings';
+import AuditLogs from './pages/AuditLogs';
 
 export default function App() {
   return (
@@ -36,6 +38,7 @@ export default function App() {
         <Route path="/documents" element={<Documents />} />
         <Route path="/reports" element={<ProtectedRoute roles={['ADMIN']}><Reports /></ProtectedRoute>} />
         <Route path="/employees" element={<ProtectedRoute roles={['ADMIN']}><Employees /></ProtectedRoute>} />
+        <Route path="/audit-logs" element={<ProtectedRoute roles={['ADMIN']}><AuditLogs /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute roles={['ADMIN']}><Settings /></ProtectedRoute>} />
       </Route>
 

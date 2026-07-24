@@ -1,11 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
       colors: {
         ink: '#111827',
-        slate: { 925: '#0b1120' },
+        slate: {
+          925: '#0b1120',
+        },
         brand: {
           50: '#eef4ff',
           100: '#d9e6ff',

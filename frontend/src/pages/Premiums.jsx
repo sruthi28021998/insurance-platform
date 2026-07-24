@@ -78,10 +78,20 @@ export default function Premiums() {
     loadOverdue();
   }
 
+  async function handleSendSms(id) {
+    await api.post(`/premiums/${id}/send-sms`);
+    alert('Mock SMS sent (logged in database).');
+  }
+
+  async function handleSendEmail(id) {
+    const res = await api.post(`/premiums/${id}/send-email`);
+    alert(res.data.status === 'SENT' ? 'Email sent!' : 'Email failed (check SMTP settings in .env).');
+  }
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="font-display text-2xl font-semibold text-ink">{isCustomer ? 'My payments' : 'Premium payments'}</h1>
+        <h1 className="font-display text-2xl font-semibold text-ink dark:text-white">{isCustomer ? 'My payments' : 'Premium payments'}</h1>
         <div className="flex gap-2">
           {isCustomer && <button className="btn-primary" onClick={() => setShowPayModal(true)}>+ Pay premium</button>}
           {canManage && <button className="btn-secondary" onClick={() => setShowScheduleModal(true)}>+ Schedule due premium</button>}
@@ -89,9 +99,9 @@ export default function Premiums() {
       </div>
 
       {canManage && overdue.length > 0 && (
-        <div className="card mb-4 border-rose-300 bg-rose-50 p-4">
-          <p className="text-sm font-semibold text-rose-800">{overdue.length} overdue premium payment{overdue.length === 1 ? '' : 's'}:</p>
-          <ul className="mt-1 list-inside list-disc text-sm text-rose-700">
+        <div className="card mb-4 border-rose-300 bg-rose-50 p-4 dark:bg-rose-950/30">
+          <p className="text-sm font-semibold text-rose-800 dark:text-rose-300">{overdue.length} overdue premium payment{overdue.length === 1 ? '' : 's'}:</p>
+          <ul className="mt-1 list-inside list-disc text-sm text-rose-700 dark:text-rose-400">
             {overdue.slice(0, 5).map((p) => (
               <li key={p.id}>{p.policy?.policyNumber} — {p.policy?.customer?.name} (due {new Date(p.dueDate).toLocaleDateString()})</li>
             ))}
@@ -116,7 +126,13 @@ export default function Premiums() {
           {
             key: 'actions',
             label: '',
-            render: (r) => (r.paymentStatus !== 'PAID' ? <button className="text-sm font-semibold text-emerald-600" onClick={() => handleMarkPaid(r.id)}>Mark paid</button> : null),
+            render: (r) => (
+              <div className="flex flex-wrap gap-2">
+                {r.paymentStatus !== 'PAID' && <button className="text-sm font-semibold text-emerald-600" onClick={() => handleMarkPaid(r.id)}>Mark paid</button>}
+                {canManage && <button className="text-sm font-semibold text-brand-600" onClick={() => handleSendSms(r.id)}>SMS</button>}
+                {canManage && <button className="text-sm font-semibold text-brand-600" onClick={() => handleSendEmail(r.id)}>Email</button>}
+              </div>
+            ),
           },
         ]}
         rows={payments}

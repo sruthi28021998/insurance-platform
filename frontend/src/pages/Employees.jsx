@@ -1,10 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import api from '../api/axios';
+import DataTable from '../components/DataTable';
 
 export default function Employees() {
+  const [employees, setEmployees] = useState([]);
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'AGENT' });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+
+  async function load() {
+    const { data } = await api.get('/auth/employees');
+    setEmployees(data);
+  }
+
+  useEffect(() => { load(); }, []);
 
   async function handleCreate(e) {
     e.preventDefault();
@@ -14,6 +23,7 @@ export default function Employees() {
       const { data } = await api.post('/auth/employees', form);
       setMessage(`Created ${data.role} account for ${data.email}`);
       setForm({ name: '', email: '', password: '', role: 'AGENT' });
+      load();
     } catch (err) {
       setError(err.response?.data?.message || 'Could not create employee account');
     }
@@ -22,7 +32,8 @@ export default function Employees() {
   return (
     <div>
       <h1 className="mb-6 font-display text-2xl font-semibold text-ink">Manage employees</h1>
-      <div className="card max-w-md p-6">
+
+      <div className="card mb-6 max-w-md p-6">
         {message && <p className="mb-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700">{message}</p>}
         {error && <p className="mb-3 rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</p>}
         <form onSubmit={handleCreate} className="space-y-3">
@@ -39,6 +50,16 @@ export default function Employees() {
           <button type="submit" className="btn-primary w-full">Create account</button>
         </form>
       </div>
+
+      <h2 className="mb-3 font-display text-lg font-semibold text-ink">Current employees</h2>
+      <DataTable
+        columns={[
+          { key: 'name', label: 'Name' },
+          { key: 'email', label: 'Email' },
+          { key: 'role', label: 'Role' },
+        ]}
+        rows={employees}
+      />
     </div>
   );
 }

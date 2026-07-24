@@ -1,6 +1,6 @@
 const prisma = require('../config/db');
+const { sendDueEmail } = require('../utils/email');
 
-// Flips any PENDING payment whose dueDate has passed to OVERDUE
 async function syncOverduePayments() {
   await prisma.premiumPayment.updateMany({
     where: { dueDate: { lt: new Date() }, paymentStatus: 'PENDING' },
@@ -8,7 +8,6 @@ async function syncOverduePayments() {
   });
 }
 
-// GET /api/premiums?policyId=&status=
 exports.getPremiums = async (req, res, next) => {
   try {
     await syncOverduePayments();
@@ -41,7 +40,6 @@ exports.getPremiums = async (req, res, next) => {
   }
 };
 
-// POST /api/premiums  (pay-now: creates an already-PAID record)
 exports.recordPayment = async (req, res, next) => {
   try {
     const { policyId, amount } = req.body;
@@ -59,7 +57,6 @@ exports.recordPayment = async (req, res, next) => {
   }
 };
 
-// POST /api/premiums/schedule  (Admin/Agent schedules an upcoming due premium)
 exports.scheduleDue = async (req, res, next) => {
   try {
     const { policyId, amount, dueDate } = req.body;
@@ -77,7 +74,6 @@ exports.scheduleDue = async (req, res, next) => {
   }
 };
 
-// PATCH /api/premiums/:id/pay  (mark a due/overdue payment as paid)
 exports.payDue = async (req, res, next) => {
   try {
     const payment = await prisma.premiumPayment.update({
@@ -90,7 +86,6 @@ exports.payDue = async (req, res, next) => {
   }
 };
 
-// GET /api/premiums/overdue
 exports.getOverdue = async (req, res, next) => {
   try {
     await syncOverduePayments();
@@ -105,7 +100,6 @@ exports.getOverdue = async (req, res, next) => {
   }
 };
 
-// PATCH /api/premiums/:id/status
 exports.updateStatus = async (req, res, next) => {
   try {
     const payment = await prisma.premiumPayment.update({
@@ -113,6 +107,40 @@ exports.updateStatus = async (req, res, next) => {
       data: { paymentStatus: req.body.paymentStatus },
     });
     res.json(payment);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.sendMockSms = async (req, res, next) => {
+  try {
+    const payment = await prisma.premiumPayment.findUnique({
+      where: { id: Number(req.params.id) },
+      include: { policy: { include: { customer: true } } },
+    });
+    if (!payment) return res.status(404).json({ message: 'Payment not found' });
+
+    const phone = payment.policy.customer.phone || 'N/A';
+    const message = `Reminder: Premium of Rs.${payment.amount} for policy ${payment.policy.policyNumber} is due on ${new Date(payment.dueDate).toDateString()}.`;
+    const log = await prisma.smsLog.create({
+      data: { policyId: payment.policyId, phone, message, status: 'SENT' },
+    });
+    res.status(201).json(log);
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.sendEmailReminder = async (req, res, next) => {
+  try {
+    const payment = await prisma.premiumPayment.findUnique({
+      where: { id: Number(req.params.id) },
+      include: { policy: { include: { customer: true } } },
+    });
+    if (!payment) return res.status(404).json({ message: 'Payment not found' });
+
+    const result = await sendDueEmail(payment);
+    res.json(result);
   } catch (err) {
     next(err);
   }

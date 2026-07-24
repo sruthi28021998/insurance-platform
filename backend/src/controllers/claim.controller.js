@@ -1,4 +1,5 @@
 const prisma = require('../config/db');
+const logAudit = require('../utils/audit');
 
 exports.getClaims = async (req, res, next) => {
   try {
@@ -58,6 +59,15 @@ exports.createClaim = async (req, res, next) => {
     const claim = await prisma.claim.create({
       data: { policyId: Number(policyId), claimAmount: Number(claimAmount), reason },
     });
+
+    await logAudit({
+      entityType: 'Claim',
+      entityId: claim.id,
+      action: 'CREATE',
+      performedBy: req.user.id,
+      details: { claimAmount: claim.claimAmount },
+    });
+
     res.status(201).json(claim);
   } catch (err) {
     next(err);
@@ -71,6 +81,15 @@ exports.reviewClaim = async (req, res, next) => {
       where: { id: Number(req.params.id) },
       data: { status, reviewNotes, reviewedBy: req.user.id },
     });
+
+    await logAudit({
+      entityType: 'Claim',
+      entityId: claim.id,
+      action: claim.status,
+      performedBy: req.user.id,
+      details: { reviewNotes },
+    });
+
     res.json(claim);
   } catch (err) {
     next(err);
@@ -90,7 +109,6 @@ exports.getClaimStats = async (req, res, next) => {
   }
 };
 
-// PATCH /api/claims/:id/assign  (Admin only)  body: { agentId }
 exports.assignClaim = async (req, res, next) => {
   try {
     const { agentId } = req.body;
@@ -98,6 +116,15 @@ exports.assignClaim = async (req, res, next) => {
       where: { id: Number(req.params.id) },
       data: { assignedAgentId: Number(agentId) },
     });
+
+    await logAudit({
+      entityType: 'Claim',
+      entityId: claim.id,
+      action: 'ASSIGN',
+      performedBy: req.user.id,
+      details: { agentId },
+    });
+
     res.json(claim);
   } catch (err) {
     next(err);

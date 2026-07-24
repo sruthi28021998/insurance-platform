@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  @apply bg-[#f7f8fb] text-ink font-sans;
+  @apply bg-[#f7f8fb] text-ink font-sans dark:bg-slate-900 dark:text-slate-100;
 }
 
 .stamp {
@@ -19,17 +19,18 @@ body {
 .stamp-overdue  { @apply border-rose-600/30 bg-rose-50 text-rose-700; }
 
 .card {
-  @apply rounded-xl border border-slate-200 bg-white shadow-sm;
+  @apply rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800;
 }
+
 .btn-primary {
   @apply rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-50;
 }
 .btn-secondary {
-  @apply rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-slate-50;
+  @apply rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-ink transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100;
 }
 .input {
-  @apply w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100;
+  @apply w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100;
 }
 .label {
-  @apply mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500;
+  @apply mb-1 block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400;
 }

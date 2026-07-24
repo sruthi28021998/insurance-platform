@@ -1,4 +1,5 @@
 const prisma = require('../config/db');
+const logAudit = require('../utils/audit');
 
 async function syncExpiredPolicies() {
   await prisma.policy.updateMany({
@@ -67,6 +68,15 @@ exports.createPolicy = async (req, res, next) => {
         endDate: new Date(endDate),
       },
     });
+
+    await logAudit({
+      entityType: 'Policy',
+      entityId: policy.id,
+      action: 'CREATE',
+      performedBy: req.user.id,
+      details: { policyNumber: policy.policyNumber },
+    });
+
     res.status(201).json(policy);
   } catch (err) {
     next(err);
@@ -86,6 +96,15 @@ exports.updatePolicy = async (req, res, next) => {
         status,
       },
     });
+
+    await logAudit({
+      entityType: 'Policy',
+      entityId: policy.id,
+      action: 'UPDATE',
+      performedBy: req.user.id,
+      details: req.body,
+    });
+
     res.json(policy);
   } catch (err) {
     next(err);
@@ -98,6 +117,14 @@ exports.cancelPolicy = async (req, res, next) => {
       where: { id: Number(req.params.id) },
       data: { status: 'CANCELLED' },
     });
+
+    await logAudit({
+      entityType: 'Policy',
+      entityId: policy.id,
+      action: 'CANCEL',
+      performedBy: req.user.id,
+    });
+
     res.json(policy);
   } catch (err) {
     next(err);

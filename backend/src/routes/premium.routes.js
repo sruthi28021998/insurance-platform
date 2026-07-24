@@ -24,5 +24,7 @@ router.post('/schedule', authorize('ADMIN', 'AGENT'), [
 
 router.patch('/:id/pay', ctrl.payDue);
 router.patch('/:id/status', authorize('ADMIN', 'AGENT'), ctrl.updateStatus);
+router.post('/:id/send-sms', authorize('ADMIN', 'AGENT'), ctrl.sendMockSms);
+router.post('/:id/send-email', authorize('ADMIN', 'AGENT'), ctrl.sendEmailReminder);
 
 module.exports = router;
