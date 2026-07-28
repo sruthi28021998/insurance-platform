@@ -26,7 +26,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // Allow requests with no origin (like mobile apps or curl) or local development and vercel apps
     if (!origin || origin.endsWith('.vercel.app') || origin.startsWith('http://localhost:')) {
       callback(null, true);
     } else {
