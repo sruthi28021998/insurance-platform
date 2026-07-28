@@ -35,6 +35,11 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/audit-logs', auditRoutes);
 
+// Root welcome route
+app.get('/', (req, res) => {
+  res.json({ message: 'Insurance Platform API is running successfully!' });
+});
+
 app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
 app.use(errorHandler);
 
