@@ -21,14 +21,13 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
   process.env.CLIENT_URL,
-  'https://insurance-platform-j5gi.vercel.app'
+  'https://insurance-platform-j5gi-7wrfv97ew.vercel.app'
 ].filter(Boolean);
 
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+    if (!origin || origin.endsWith('.vercel.app') || origin.startsWith('http://localhost:')) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
