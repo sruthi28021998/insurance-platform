@@ -25,7 +25,7 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:5173',
   process.env.CLIENT_URL,
-  'https://insurance-platform-j5gi-7wrfv97ew.vercel.app'
+  'https://insurance-platform-rose.vercel.app/'
 ].filter(Boolean);
 
 app.use(cors({
