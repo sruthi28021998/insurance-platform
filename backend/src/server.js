@@ -4,7 +4,6 @@ const cors = require('cors');
 const path = require('path');
 
 const authRoutes = require('./routes/auth.routes');
-const setupRoutes = require('./routes/setup.routes');
 const customerRoutes = require('./routes/customer.routes');
 const policyRoutes = require('./routes/policy.routes');
 const claimRoutes = require('./routes/claim.routes');
@@ -48,7 +47,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRoutes);
-app.use('/api/setup', setupRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/policies', policyRoutes);
 app.use('/api/claims', claimRoutes);
