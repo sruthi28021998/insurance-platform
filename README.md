@@ -231,7 +231,6 @@ Click any link below to open the full-size screenshot.
 - [Customer Profile & Policy History](./screenshots/customer-profile.jpg) — individual customer profile with policy history
 - [Claim Documents](./screenshots/claim-documents.jpg) — documents uploaded and linked to a submitted claim
 - [Claim Approval Workflow](./screenshots/claim-approved.jpg) — a claim assigned to an agent and marked APPROVED
-- [Premium Payment Confirmation](./screenshots/premium-paid.jpg) — a premium payment successfully marked PAID
 - [Excel Report Export](./screenshots/excel-export.jpg) — exported business report opened in Excel
 
 
