@@ -63,6 +63,16 @@ export default function Customers() {
     }
   }
 
+  async function handleDelete(customer) {
+    if (!window.confirm(`Delete ${customer.name}? This cannot be undone.`)) return;
+    try {
+      await api.delete(`/customers/${customer.id}`);
+      load();
+    } catch (err) {
+      alert(err.response?.data?.message || 'Could not delete customer (it may have linked policies)');
+    }
+  }
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -90,6 +100,7 @@ export default function Customers() {
               <div className="flex gap-3">
                 <Link className="text-sm font-semibold text-brand-600" to={`/customers/${r.id}`}>View</Link>
                 <button className="text-sm font-semibold text-slate-600" onClick={() => openEdit(r)}>Edit</button>
+                <button className="text-sm font-semibold text-rose-600" onClick={() => handleDelete(r)}>Delete</button>
               </div>
             ),
           },
