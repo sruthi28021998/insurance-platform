@@ -123,6 +123,7 @@ export default function Policies() {
 
       <DataTable
         columns={[
+          { key: 'id', label: 'ID' },
           { key: 'policyNumber', label: 'Policy #' },
           { key: 'policyType', label: 'Type' },
           { key: 'customer', label: 'Customer', render: (r) => r.customer?.name || '—' },
