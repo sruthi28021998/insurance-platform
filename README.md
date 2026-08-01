@@ -130,7 +130,9 @@ Password for all seeded accounts: `Password123!`
 |---|---|
 | Admin | admin1@test.com |
 | Agent | agent1@test.com |
-| Customer | customer1@test.com |
+| Customer | customer1@test.com |  
+
+**Note:** For the local development setup above, use `customer1@test.com` as shown. For the live Vercel deployment specifically, use `claimant1@test.com` / `Test1234` instead — this account was created via self-registration to ensure a properly linked customer profile in the production database.
 
 ---
 
