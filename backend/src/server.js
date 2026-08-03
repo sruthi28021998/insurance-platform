@@ -15,19 +15,9 @@ const auditRoutes = require('./routes/audit.routes');
 const errorHandler = require('./middleware/errorHandler');
 const startDueReminderJob = require('./utils/dueReminderCron');
 
-// Import your mongoose/database connection instance and User model if separate
-// Example: const connectDB = require('./config/db');
-// Example: const User = require('./models/user.model');
-
 const app = express();
 
-// Updated CORS configuration to support your Vercel frontend and local development
-const allowedOrigins = [
-  'http://localhost:5173',
-  process.env.CLIENT_URL,
-  'https://insurance-platform-rose.vercel.app/'
-].filter(Boolean);
-
+// CORS configuration to support both the Vercel frontend and local development
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || origin.endsWith('.vercel.app') || origin.startsWith('http://localhost:')) {
@@ -36,7 +26,7 @@ app.use(cors({
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true
+  credentials: true,
 }));
 
 app.use(express.json());
@@ -64,38 +54,9 @@ app.get('/', (req, res) => {
 app.use((req, res) => res.status(404).json({ message: 'Route not found' }));
 app.use(errorHandler);
 
-// --- AUTO-SEED FUNCTION FOR CLOUD DEPLOYMENTS ---
-const seedDemoUsersOnStartup = async () => {
-  try {
-    const User = require('./models/user.model'); // Adjust path to your User model if needed
-    const bcrypt = require('bcryptjs');
-
-    const adminExists = await User.findOne({ role: 'admin' });
-    if (!adminExists) {
-      console.log('No admin found on live database. Auto-seeding demo accounts...');
-      
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash('password123', salt); // Change default demo password if needed
-
-      await User.insertMany([
-        { name: 'Demo Admin', email: 'admin@insurance.com', password: hashedPassword, role: 'admin' },
-        { name: 'Demo Agent', email: 'agent@insurance.com', password: hashedPassword, role: 'agent' },
-        { name: 'Demo Customer', email: 'customer@insurance.com', password: hashedPassword, role: 'customer' }
-      ]);
-
-      console.log('Demo accounts successfully seeded on live database!');
-    }
-  } catch (err) {
-    console.error('Auto-seed check failed or skipped:', err.message);
-  }
-};
-// ------------------------------------------------
-
 const PORT = process.env.PORT || 5000;
 
-// Run seed function right before starting the listener (or place it inside your mongoose connection callback)
-app.listen(PORT, async () => {
+app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
-  await seedDemoUsersOnStartup();
   startDueReminderJob();
 });
